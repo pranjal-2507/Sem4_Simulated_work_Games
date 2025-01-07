@@ -49,9 +49,9 @@ function displayResult(player, computer, result) {
     if (result === 'player') {
         message += 'You Win!🥳';
     } else if (result === 'computer') {
-        message += 'Computer Wins!🙁';
+        message += 'Computer Wins!😔';
     } else {
-        message += "It's a Tie!";
+        message += "It's a Tie!😐";
     }
     resultDiv.innerHTML = `<p>${message}</p>`;
 }
