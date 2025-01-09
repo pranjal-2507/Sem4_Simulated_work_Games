@@ -49,7 +49,7 @@ function countdown() {
 // Start the game
 function startGame() {
   randomSquare();
-  moleTimerId = setInterval(randomSquare, 800);
+  moleTimerId = setInterval(randomSquare, 900);
   timerId = setInterval(countdown, 1000);
 }
 
