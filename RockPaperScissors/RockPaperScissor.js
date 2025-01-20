@@ -1,5 +1,11 @@
-let playerScore = 0;
-let computerScore = 0;
+let playerWins = 0;
+let computerWins = 0;
+let ties = 0;
+
+// Load sound effects
+const winSound = new Audio('./assests/win.mp3');
+const loseSound = new Audio('./assests/lose.mp3');
+
 
 const choices = ['rock', 'paper', 'scissors'];
 
@@ -9,8 +15,10 @@ document.querySelectorAll('.choice').forEach(button => {
         const computerChoice = getComputerChoice();
         const result = determineWinner(playerChoice, computerChoice);
 
+        playSound(result);
         updateScores(result);
         displayResult(playerChoice, computerChoice, result);
+        animateChoice(button);
     });
 });
 
@@ -33,33 +41,51 @@ function determineWinner(player, computer) {
     return 'computer';
 }
 
+function playSound(result) {
+    if (result === 'player') {
+        winSound.play();
+    } else if (result === 'computer') {
+        loseSound.play();
+    } 
+}
+
 function updateScores(result) {
     if (result === 'player') {
-        playerScore++;
+        playerWins++;
     } else if (result === 'computer') {
-        computerScore++;
+        computerWins++;
+    } else {
+        ties++;
     }
-    document.getElementById('player-score').textContent = playerScore;
-    document.getElementById('computer-score').textContent = computerScore;
+    document.getElementById('player-wins').textContent = playerWins;
+    document.getElementById('computer-wins').textContent = computerWins;
+    document.getElementById('ties').textContent = ties;
 }
 
 function displayResult(player, computer, result) {
     const resultDiv = document.getElementById('result');
     let message = `You chose ${player}, Computer chose ${computer}. `;
     if (result === 'player') {
-        message += 'You Win!🥳';
+        message += 'You Win! 🥳';
     } else if (result === 'computer') {
-        message += 'Computer Wins!😔';
+        message += 'Computer Wins! 😔';
     } else {
-        message += "It's a Tie!😐";
+        message += "It's a Tie! 😐";
     }
     resultDiv.innerHTML = `<p>${message}</p>`;
 }
 
+function animateChoice(button) {
+    button.classList.add('bounce');
+    setTimeout(() => button.classList.remove('bounce'), 600);
+}
+
 function resetGame() {
-    playerScore = 0;
-    computerScore = 0;
-    document.getElementById('player-score').textContent = playerScore;
-    document.getElementById('computer-score').textContent = computerScore;
+    playerWins = 0;
+    computerWins = 0;
+    ties = 0;
+    document.getElementById('player-wins').textContent = playerWins;
+    document.getElementById('computer-wins').textContent = computerWins;
+    document.getElementById('ties').textContent = ties;
     document.getElementById('result').innerHTML = '<p>Make your move!</p>';
 }
