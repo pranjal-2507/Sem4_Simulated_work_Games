@@ -10,11 +10,12 @@ let xDirection = -2;
 let yDirection = 2;
 const userStart = [230, 10];
 let currentPosition = [...userStart];
+
 const ballStart = [230, 40];
 let ballCurrentPosition = [...ballStart];
 let score = 0;
 
-// Block class
+// Create Block class
 class Block {
     constructor(xAxis, yAxis) {
         this.bottomLeft = [xAxis, yAxis];
@@ -24,16 +25,26 @@ class Block {
     }
 }
 
-// Blocks
+// All blocks
 const blocks = [
-    new Block(10, 270), new Block(120, 270), new Block(230, 270),
-    new Block(340, 270), new Block(450, 270), new Block(10, 240),
-    new Block(120, 240), new Block(230, 240), new Block(340, 240),
-    new Block(450, 240), new Block(10, 210), new Block(120, 210),
-    new Block(230, 210), new Block(340, 210), new Block(450, 210),
+    new Block(10, 270),
+    new Block(120, 270),
+    new Block(230, 270),
+    new Block(340, 270),
+    new Block(450, 270),
+    new Block(10, 240),
+    new Block(120, 240),
+    new Block(230, 240),
+    new Block(340, 240),
+    new Block(450, 240),
+    new Block(10, 210),
+    new Block(120, 210),
+    new Block(230, 210),
+    new Block(340, 210),
+    new Block(450, 210),
 ];
 
-// Add blocks
+// Draw blocks
 function addBlocks() {
     blocks.forEach(block => {
         const blockElement = document.createElement('div');
@@ -50,6 +61,7 @@ const user = document.createElement('div');
 user.classList.add('user');
 grid.appendChild(user);
 
+// Draw user
 function drawUser() {
     user.style.left = `${currentPosition[0]}px`;
     user.style.bottom = `${currentPosition[1]}px`;
@@ -61,6 +73,7 @@ const ball = document.createElement('div');
 ball.classList.add('ball');
 grid.appendChild(ball);
 
+// Draw ball
 function drawBall() {
     ball.style.left = `${ballCurrentPosition[0]}px`;
     ball.style.bottom = `${ballCurrentPosition[1]}px`;
@@ -112,10 +125,9 @@ function checkForCollisions() {
             changeDirection();
             score++;
             scoreDisplay.textContent = score;
-
-            if (blocks.length === 0) {
-                scoreDisplay.textContent = score;
-                scoreDisplay.textContent = 'You Win! 🥳';
+            
+            if (blocks.length === 0){
+                scoreDisplay.textContent = 'You Win!🥳';
                 clearInterval(timerId);
                 document.removeEventListener('keydown', moveUser);
             }
@@ -143,7 +155,6 @@ function checkForCollisions() {
     // Game over
     if (ballCurrentPosition[1] <= 0) {
         clearInterval(timerId);
-        scoreDisplay.textContent = score;
         scoreDisplay.textContent = 'You Lose! 😢';
         document.removeEventListener('keydown', moveUser);
     }
