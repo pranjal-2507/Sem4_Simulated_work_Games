@@ -2,6 +2,8 @@ const rows = 6;
 const cols = 7;
 const board = [];
 let currentPlayer = 1; // 1 for red, 2 for yellow
+let timer;
+let timeLeft = 10;
 
 // Initialize the game board
 function createBoard() {
@@ -19,6 +21,7 @@ function createBoard() {
             boardDiv.appendChild(cell);
         }
     }
+    resetTimer();
     updateStatus();
 }
 
@@ -40,7 +43,11 @@ function makeMove(event) {
         if (board[row][col] === null) {
             board[row][col] = currentPlayer;
             const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
-            cell.classList.add(currentPlayer === 1 ? "red" : "yellow");
+            const disc = document.createElement("div");
+            disc.classList.add("disc", currentPlayer === 1 ? "red" : "yellow");
+            cell.appendChild(disc);
+            setTimeout(() => disc.style.transform = "translateY(0)", 50);
+
             if (checkWin(row, col)) {
                 updateStatus(`Player ${currentPlayer} Wins!`);
                 disableBoard();
@@ -48,6 +55,7 @@ function makeMove(event) {
                 updateStatus("It's a Draw!");
             } else {
                 currentPlayer = currentPlayer === 1 ? 2 : 1;
+                resetTimer();
                 updateStatus();
             }
             return;
@@ -91,6 +99,13 @@ function checkWin(row, col) {
     return false;
 }
 
+// Reset the game
+document.getElementById("reset").addEventListener("click", () => {
+    currentPlayer = 1;
+    board.length = 0; // Clear the board array
+    createBoard();
+});
+
 // Disable further moves after the game ends
 function disableBoard() {
     document.querySelectorAll(".cell").forEach(cell => {
@@ -98,12 +113,22 @@ function disableBoard() {
     });
 }
 
-// Reset the game
-document.getElementById("reset").addEventListener("click", () => {
-    currentPlayer = 1;
-    board.length = 0; // Clear the board array
-    createBoard();
-});
+// Timer functionality
+function resetTimer() {
+    clearInterval(timer);
+    timeLeft = 10;
+    document.getElementById("time").textContent = timeLeft;
+    timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("time").textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            resetTimer();
+            updateStatus();
+        }
+    }, 1000);
+}
 
 // Initialize the game
 createBoard();
