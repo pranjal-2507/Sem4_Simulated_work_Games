@@ -8,17 +8,27 @@ let score = 0;
 let timeLeft = 30;
 let timerId;
 let moleTimerId;
+let moleInterval = 1000; // Initial mole interval
 
-// Function to randomly place the mole
+// Function to randomly place a mole or bonus mole
 function randomSquare() {
-  squares.forEach((square) => square.classList.remove("mole"));
+  squares.forEach((square) => square.classList.remove("mole", "bonus-mole"));
+
   let randomIndex;
   do {
     randomIndex = Math.floor(Math.random() * squares.length);
-  } while (squares[randomIndex] === lastMolePosition); // Ensure the new position is different
+  } while (squares[randomIndex] === lastMolePosition); // Ensure new position is different
 
   molePosition = squares[randomIndex];
-  molePosition.classList.add("mole");
+
+  // Randomly decide if this mole is a bonus mole
+  const isBonusMole = Math.random() < 0.2; // 20% chance of a bonus mole
+  if (isBonusMole) {
+    molePosition.classList.add("bonus-mole");
+  } else {
+    molePosition.classList.add("mole");
+  }
+
   lastMolePosition = molePosition; // Update the last mole position
 }
 
@@ -26,13 +36,27 @@ function randomSquare() {
 squares.forEach((square) => {
   square.addEventListener("click", () => {
     if (square === molePosition) {
-      score++;
+      if (square.classList.contains("bonus-mole")) {
+        score += 5; // Bonus mole grants extra points
+      } else {
+        score++;
+      }
       scoreDisplay.textContent = score;
-      molePosition.classList.remove("mole");
+      molePosition.classList.remove("mole", "bonus-mole");
       randomSquare();
+      increaseDifficulty(); // Adjust game difficulty based on the score
     }
   });
 });
+
+// Function to increase difficulty
+function increaseDifficulty() {
+  if (score % 5 === 0 && moleInterval > 400) {
+    moleInterval -= 100; // Decrease interval every 5 points
+    clearInterval(moleTimerId); // Reset mole interval
+    moleTimerId = setInterval(randomSquare, moleInterval);
+  }
+}
 
 // Function to handle the countdown
 function countdown() {
@@ -49,7 +73,7 @@ function countdown() {
 // Start the game
 function startGame() {
   randomSquare();
-  moleTimerId = setInterval(randomSquare, 900);
+  moleTimerId = setInterval(randomSquare, moleInterval);
   timerId = setInterval(countdown, 1000);
 }
 
