@@ -30,11 +30,32 @@ h1 {
 }
 
 .mole {
-  background-color: brown; /* or use a mole image */
+  background-color: brown; /* Normal mole color */
   border-radius: 50%;
   width: 100%;
   height: 100%;
 }
+
+.bonus-mole {
+  background-color: gold; /* Bonus mole color */
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  animation: bonus-glow 1s infinite;
+}
+
+@keyframes bonus-glow {
+  0% {
+    box-shadow: 0 0 10px gold;
+  }
+  50% {
+    box-shadow: 0 0 20px yellow;
+  }
+  100% {
+    box-shadow: 0 0 10px gold;
+  }
+}
+
 
 .info {
   margin-top: 20px;

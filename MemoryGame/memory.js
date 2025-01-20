@@ -2,19 +2,51 @@ const emojis = ["🥳", "😃", "🍇", "🍉", "🎯", "😎", "🍍", "✏️"
 const cardGrid = document.getElementById("card-grid");
 const startGameButton = document.getElementById("start-game");
 const winMessage = document.getElementById("win-message");
-const scoreElement = document.createElement("p"); // Create a score element
-scoreElement.textContent = "Score: 0";
-scoreElement.id = "score";
-document.querySelector(".game-container").insertBefore(scoreElement, cardGrid);
+const timerElement = document.getElementById("timer");
+const bestTimeElement = document.getElementById("best-time");
+const difficultySelector = document.getElementById("difficulty");
 
 let cards = [];
 let flippedCards = [];
 let matchedPairs = 0;
 let score = 0;
+let timerInterval;
+let elapsedTime = 0;
+
+// Load best time from local storage
+function loadBestTime() {
+  const bestTime = localStorage.getItem("bestTime");
+  bestTimeElement.textContent = `Best Time: ${bestTime ? bestTime + "s" : "--"}`;
+}
+
+// Save best time to local storage
+function saveBestTime(time) {
+  const bestTime = localStorage.getItem("bestTime");
+  if (!bestTime || time < bestTime) {
+    localStorage.setItem("bestTime", time);
+    bestTimeElement.textContent = `Best Time: ${time}s`;
+  }
+}
+
+// Start the timer
+function startTimer() {
+  elapsedTime = 0;
+  timerElement.textContent = `Time: 0s`;
+  timerInterval = setInterval(() => {
+    elapsedTime++;
+    timerElement.textContent = `Time: ${elapsedTime}s`;
+  }, 1000);
+}
+
+// Stop the timer
+function stopTimer() {
+  clearInterval(timerInterval);
+}
 
 // Initialize the game
-function shuffleCards() {
-  const doubledEmojis = [...emojis, ...emojis];
+function shuffleCards(cardCount) {
+  const selectedEmojis = emojis.slice(0, cardCount / 2);
+  const doubledEmojis = [...selectedEmojis, ...selectedEmojis];
   return doubledEmojis
     .sort(() => Math.random() - 0.5)
     .map((emoji, index) => ({
@@ -70,8 +102,6 @@ function checkForMatch() {
     card1.matched = true;
     card2.matched = true;
     matchedPairs++;
-    score += 10; // Increment score for each match
-    updateScore();
 
     // Ensure matched cards stay flipped and change color
     document.querySelectorAll(".flipped").forEach((cardElement) => {
@@ -87,24 +117,36 @@ function checkForMatch() {
   flippedCards = [];
 
   // Check win condition
-  if (matchedPairs === emojis.length) {
+  if (matchedPairs === cards.length / 2) {
+    stopTimer();
     winMessage.classList.remove("hidden");
+    saveBestTime(elapsedTime);
   }
-}
-
-// Update score
-function updateScore() {
-  scoreElement.textContent = `Score: ${score}`;
 }
 
 // Start game
 function startGame() {
   winMessage.classList.add("hidden");
+  stopTimer();
   matchedPairs = 0;
-  score = 0;
-  updateScore();
-  cards = shuffleCards();
+  flippedCards = [];
+
+  const difficulty = difficultySelector.value;
+  let cardCount;
+
+  if (difficulty === "easy") {
+    cardCount = 8;
+  } else if (difficulty === "medium") {
+    cardCount = 12;
+  } else {
+    cardCount = 16;
+  }
+
+  cards = shuffleCards(cardCount);
   renderCards(cards);
+  startTimer();
 }
 
+// Event listeners
 startGameButton.addEventListener("click", startGame);
+window.addEventListener("load", loadBestTime);
